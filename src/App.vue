@@ -1,85 +1,77 @@
 <template>
   <div>
-    <!-- Beverage Mug Display -->
-    <Beverage
-      :isIced="beverageStore.selectedTemperature === 'Cold'"
-      :base="beverageStore.selectedBase.name"
-      :syrup="beverageStore.selectedSyrup.name"
-      :creamer="beverageStore.selectedCreamer.name"
-    />
+    <h1>Custom Drink Maker</h1>
 
-    <!-- Temperature Toggle -->
-    <ul>
-      <li>
-        <template v-for="temp in beverageStore.temperatures" :key="temp">
-          <label>
-            <input
-              type="radio"
-              name="temperature"
-              :id="`r${temp}`"
-              :value="temp"
-              v-model="beverageStore.selectedTemperature"
-            />
-            {{ temp }}
-          </label>
-        </template>
-      </li>
-    </ul>
+    <!-- Selections -->
+    <div>
+      <label>Base:</label>
+      <select v-model="store.currentBase">
+        <option v-for="b in store.bases" :key="b.id" :value="b">{{ b.name }}</option>
+      </select>
 
-    <!-- Name input -->
-    <input
-      type="text"
-      placeholder="Beverage Name"
-      v-model="beverageStore.beverageName"
-    />
+      <label>Creamer:</label>
+      <select v-model="store.currentCreamer">
+        <option v-for="c in store.creamers" :key="c.id" :value="c">{{ c.name }}</option>
+      </select>
 
-    <!-- Make Beverage button -->
-    <button @click="beverageStore.makeBeverage">🍺 Make Beverage</button>
+      <label>Syrup:</label>
+      <select v-model="store.currentSyrup">
+        <option v-for="s in store.syrups" :key="s.id" :value="s">{{ s.name }}</option>
+      </select>
+    </div>
 
-    <!-- Saved Beverage List -->
-    <div id="beverage-container" style="margin-top: 20px">
-      <h3>Saved Beverages:</h3>
+    <!-- Make Beverage -->
+    <button @click="store.makeBeverage">Make Beverage</button>
 
-      <div v-if="beverageStore.beverages.length === 0">
-        <em>No beverages saved yet.</em>
+    <!-- Saved Beverages -->
+    <h2>Saved Beverages</h2>
+    <div id="beverage-container">
+      <div v-for="bev in store.beverages" :key="bev.id">
+        <input
+          type="radio"
+          :id="bev.id"
+          name="beverage"
+          :value="bev.id"
+          v-model="store.selectedBeverageId"
+          @change="store.showBeverage(bev.id)"
+        />
+        <label :for="bev.id">{{ bev.base.name }} + {{ bev.creamer.name }} + {{ bev.syrup.name }}</label>
       </div>
+    </div>
 
-      <ul v-else>
-        <li
-          v-for="drink in beverageStore.beverages"
-          :key="drink.name"
-          style="margin: 4px 0;"
-        >
-          <button @click="beverageStore.showBeverage(drink)">
-            {{ drink.name }}
-          </button>
-        </li>
-      </ul>
+    <!-- Mug Preview -->
+    <h2>Your Mug</h2>
+    <div
+      id="mug"
+      :style="{
+        width: '200px',
+        height: '200px',
+        border: '2px solid black',
+        borderRadius: '10px',
+        backgroundColor: store.currentBase?.color || 'white',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }"
+    >
+      <p>{{ store.currentBase?.name }}</p>
+      <p>{{ store.currentCreamer?.name }}</p>
+      <p>{{ store.currentSyrup?.name }}</p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import Beverage from "./components/Beverage.vue";
 import { useBeverageStore } from "./stores/beverageStore";
-
-// connect to the Pinia store
-const beverageStore = useBeverageStore();
+const store = useBeverageStore();
 </script>
 
-<style lang="scss">
-body,
-html {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  background-color: #6e4228;
-  background: linear-gradient(to bottom, #6e4228 0%, #956f5a 100%);
+<style scoped>
+#beverage-container {
+  margin: 1rem 0;
 }
-
-ul {
-  list-style: none;
+#beverage-container div {
+  margin-bottom: 0.5rem;
 }
 </style>
