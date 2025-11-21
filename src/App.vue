@@ -2,7 +2,7 @@
   <div>
     <h1>Custom Drink Maker</h1>
 
-    <!-- Selections -->
+
     <div>
       <label>Base:</label>
       <select v-model="store.currentBase">
@@ -39,7 +39,7 @@
       </div>
     </div>
 
-    <!-- Mug Preview -->
+    
     <h2>Your Mug</h2>
     <div
       id="mug"
