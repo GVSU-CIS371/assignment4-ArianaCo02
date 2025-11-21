@@ -1,9 +1,17 @@
+// src/main.ts
 import { createApp } from "vue";
-import "./styles/mug.scss";
-import { createPinia } from "pinia";
-import piniaPluginPersistedState from "pinia-plugin-persistedstate";
 import App from "./App.vue";
-const pinia = createPinia();
-pinia.use(piniaPluginPersistedState);
+import { createPinia } from "pinia";
+import { useBeverageStore } from "./stores/beverageStore";
 
-createApp(App).use(pinia).mount("#app");
+const app = createApp(App);
+const pinia = createPinia();
+app.use(pinia);
+
+async function bootstrap() {
+  const beverageStore = useBeverageStore();
+  await beverageStore.init(); // load Firestore data and defaults
+  app.mount("#app");
+}
+
+bootstrap();
