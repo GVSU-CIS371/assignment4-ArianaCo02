@@ -2,6 +2,11 @@ import { defineStore } from "pinia";
 import db from "../firebase"; // make sure firebase.ts exports initialized Firestore
 import { collection, getDocs, addDoc, doc, setDoc } from "firebase/firestore";
 
+// Import default data from JSON
+import basesData from "../data/bases.json";
+import creamersData from "../data/creamers.json";
+import syrupsData from "../data/syrups.json";
+
 interface BeverageItem {
   id: string;
   name: string;
@@ -30,26 +35,6 @@ export const useBeverageStore = defineStore("beverageStore", {
   actions: {
     /** Load Firestore data and populate defaults if empty */
     async init() {
-      const defaultBases: BeverageItem[] = [
-        { id: "b1", name: "Black Tea", color: "#8B4513" },
-        { id: "b2", name: "Green Tea", color: "#C8E6C9" },
-        { id: "b3", name: "Coffee", color: "#6F4E37" },
-      ];
-
-      const defaultCreamers: BeverageItem[] = [
-        { id: "c1", name: "No Cream", color: "transparent" },
-        { id: "c2", name: "Milk", color: "AliceBlue" },
-        { id: "c3", name: "Cream", color: "#F5F5DC" },
-        { id: "c4", name: "Half & Half", color: "#FFFACD" },
-      ];
-
-      const defaultSyrups: BeverageItem[] = [
-        { id: "s1", name: "No Syrup", color: "transparent" },
-        { id: "s2", name: "Vanilla", color: "#FFEFD5" },
-        { id: "s3", name: "Caramel", color: "#DAA520" },
-        { id: "s4", name: "Hazelnut", color: "#6B4423" },
-      ];
-
       // Helper function: populate collection if empty
       const ensureCollection = async (name: string, defaults: BeverageItem[]) => {
         const snap = await getDocs(collection(db, name));
@@ -62,10 +47,10 @@ export const useBeverageStore = defineStore("beverageStore", {
         return updatedSnap.docs.map(doc => doc.data() as BeverageItem);
       };
 
-      // Initialize Firestore collections
-      this.bases = await ensureCollection("bases", defaultBases);
-      this.creamers = await ensureCollection("creamers", defaultCreamers);
-      this.syrups = await ensureCollection("syrups", defaultSyrups);
+      // Initialize Firestore collections with JSON data
+      this.bases = await ensureCollection("bases", basesData);
+      this.creamers = await ensureCollection("creamers", creamersData);
+      this.syrups = await ensureCollection("syrups", syrupsData);
 
       // Set default selections
       this.currentBase = this.bases[0] || null;
@@ -77,7 +62,7 @@ export const useBeverageStore = defineStore("beverageStore", {
       this.beverages = bevSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Beverage));
     },
 
-    /** Save current beverage to Firestore */
+   
     async makeBeverage() {
       if (!this.currentBase || !this.currentCreamer || !this.currentSyrup) return;
 
