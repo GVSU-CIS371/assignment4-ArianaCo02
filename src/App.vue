@@ -63,9 +63,16 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from "vue";
 import { useBeverageStore } from "./stores/beverageStore";
+
 const store = useBeverageStore();
+
+onMounted(() => {
+  store.init();  
+});
 </script>
+
 
 <style scoped>
 #beverage-container {
